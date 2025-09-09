@@ -53,7 +53,6 @@ def make_ddim_timesteps(ddim_discr_method, num_ddim_timesteps, num_ddpm_timestep
 
         """T를 포함하면서 0까지 간다: 0 ~ 999"""
         ddim_timesteps = np.linspace(0, num_ddpm_timesteps - 1, num_ddim_timesteps).astype(int)
-
         steps_out = ddim_timesteps
     elif ddim_discr_method == 'logarithmic':
         """0과 999를 포함하면서 초기 denoising에 집중"""

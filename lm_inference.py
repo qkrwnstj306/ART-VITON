@@ -54,6 +54,7 @@ def build_args():
     parser.add_argument("--noisy_mcg", action="store_true")
     parser.add_argument("--noisy_dps", action="store_true")
     parser.add_argument("--treg", action="store_true")
+    parser.add_argument("--dreamsampler", action="store_true") 
 
     parser.add_argument("--sampling_schedule", type=str, default="uniform")
     args = parser.parse_args()
@@ -119,8 +120,6 @@ def main(args):
 
         ts = torch.full((1,), 999, device=z.device, dtype=torch.long)
         start_code, mask = get_code(model, z, ts, c, batch, code_name=args.code_name)
-        if not (args.replacement or args.mcg or args.noisy_mcg):
-            mask = None # replacement x
 
         img_callback_fn = None
         predicted_x0_fn = None
@@ -186,6 +185,7 @@ def main(args):
             noisy_mcg=args.noisy_mcg,
             noisy_dps=args.noisy_dps,
             treg=args.treg,
+            dreamsampler=args.dreamsampler,
         )
         
         lmgrad.set_init()

@@ -274,8 +274,8 @@ class ControlLDM(LatentDiffusion):
         print("=====configure optimizer=====")
         if self.pbe_train_mode:
             print("pbe train mode")
-            # params = list(self.model.parameters())
-            # print("- unet is added")
+            params = list(self.model.parameters())
+            print("- unet is added")
             params = list(self.cond_stage_model.final_ln.parameters())
             print("- cond stage model final ln is added")
             params += list(self.cond_stage_model.mapper.parameters())

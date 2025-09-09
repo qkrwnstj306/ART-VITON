@@ -4,7 +4,10 @@ Use Inception V3
 
 E.g., 
 pip install pytorch-fid
-python -m pytorch_fid /home/qkrwnstj/StableVITON/dataset/zalando-hd-resized/test/image /home/qkrwnstj/StableVITON/999_pure51step_cfg1/unpair
+CUDA_VISIBLE_DEVICES=3 python -m pytorch_fid /home/qkrwnstj/StableVITON/dataset/zalando-hd-resized/test/image /home/qkrwnstj/StableVITON/ablation_highFreq/unpair
+CUDA_VISIBLE_DEVICES=3 python -m pytorch_fid /home/qkrwnstj/StableVITON/dataset/DressCode_1024/upper/test_image /home/qkrwnstj/StableVITON/dresscode_results_stableviton_pure_blending/unpair
+CUDA_VISIBLE_DEVICES=3 python -m pytorch_fid /home/qkrwnstj/StableVITON/dataset/SHHQ-1.0/test/image /home/qkrwnstj/StableVITON/shhq_results_ours_whole/unpair
+
 --batch-size 50
 --device cuda:0
 --dims 64/192/768/2048
