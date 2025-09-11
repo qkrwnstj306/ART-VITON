@@ -57,6 +57,7 @@ def build_args():
     parser.add_argument("--dreamsampler", action="store_true") 
 
     parser.add_argument("--sampling_schedule", type=str, default="uniform")
+    parser.add_arguement("--modify_final_t", action="store_true")
     args = parser.parse_args()
     return args
 
@@ -179,6 +180,7 @@ def main(args):
             use_pure_to_prior=args.use_pure_to_prior,
             add_noise=args.add_noise, # ddpm prior + noise 
             apply_stochastic_noise=args.apply_stochastic_noise, # stochastic noise
+            modify_last_time_step=args.modify_final_t,
             replacement=args.replacement,
             mcg=args.mcg, 
             dps=args.dps,

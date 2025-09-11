@@ -8,11 +8,12 @@ nohup env CUDA_VISIBLE_DEVICES=0 python lm_inference.py \
     --batch_size 1 \
     --cfg_scale 1 \
     --model_load_path ./ckpts/VITONHD.ckpt \
+    --modify_final_t \
     --use_pure_to_prior \
     --[apply_lm, replacement, mcg, dps, noisy_mcg, noisy_dps, treg, dreamsampler] \
     --{apply_stochastic_noise} \
     --{unpair} \
-    --save_dir ./results > inference.log 2>&1 &
+    --save_dir ./vitonhd_results > viton_inference.log 2>&1 &
 
 # For DressCode inference
 nohup env CUDA_VISIBLE_DEVICES=1 python lm_inference.py \
@@ -20,12 +21,13 @@ nohup env CUDA_VISIBLE_DEVICES=1 python lm_inference.py \
     --data_root_dir ./dataset/DressCode_1024/upper \
     --batch_size 1 \
     --cfg_scale 1 \
-    --model_load_path /home/qkrwnstj/StableVITON/ckpts/DressCode/models/[Train]_[epoch=339]_[train_loss_epoch=0.0249].ckpt \
+    --model_load_path /home/qkrwnstj/StableVITON/ckpts/DressCode/models/DressCode.ckpt \
+    --modify_final_t \
     --use_pure_to_prior \
     --[apply_lm, replacement, mcg, dps, noisy_mcg, noisy_dps, treg, dreamsampler] \
     --{apply_stochastic_noise} \
     --{unpair} \
-    --save_dir ./results > inference.log 2>&1 &
+    --save_dir ./dresscode_results > dresscode_inference.log 2>&1 &
 
 # For SHHQ-1.0 inference
 nohup env CUDA_VISIBLE_DEVICES=2 python lm_inference.py \
@@ -34,8 +36,9 @@ nohup env CUDA_VISIBLE_DEVICES=2 python lm_inference.py \
     --batch_size 1 \
     --cfg_scale 1 \
     --model_load_path ./ckpts/VITONHD.ckpt \
+    --modify_final_t \
     --use_pure_to_prior \
     --[apply_lm, replacement, mcg, dps, noisy_mcg, noisy_dps, treg, dreamsampler] \
     --{apply_stochastic_noise} \
-    --unpair \
-    --save_dir ./results > inference.log 2>&1 &
+    --{unpair} \
+    --save_dir ./shhq_results > shhq_inference.log 2>&1 &

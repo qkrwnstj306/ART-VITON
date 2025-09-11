@@ -136,6 +136,7 @@ class LMDDIMSampler(object):
                use_pure_to_prior=False,
                add_noise=False,
                apply_stochastic_noise=False,
+               modify_last_time_step=False,
                replacement=False, mcg=False, dps=False, noisy_mcg=False, noisy_dps=False, treg=False, dreamsampler=False,
                **kwargs
                ):
@@ -156,7 +157,7 @@ class LMDDIMSampler(object):
                 if conditioning.shape[0] != batch_size:
                     print(f"Warning: Got {conditioning.shape[0]} conditionings but batch-size is {batch_size}")
 
-        self.make_schedule(ddim_num_steps=S, ddim_discretize=sampling_schedule, ddim_eta=eta, verbose=verbose)
+        self.make_schedule(ddim_num_steps=S, ddim_discretize=sampling_schedule, ddim_eta=eta, modify_last_time_step=modify_last_time_step, verbose=verbose)
         # sampling
         C, H, W = shape
         size = (batch_size, C, H, W)

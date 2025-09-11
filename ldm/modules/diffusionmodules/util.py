@@ -44,16 +44,15 @@ def make_beta_schedule(schedule, n_timestep, linear_start=1e-4, linear_end=2e-2,
     return betas.numpy()
 
 
-def make_ddim_timesteps(ddim_discr_method, num_ddim_timesteps, num_ddpm_timesteps, verbose=True):
+def make_ddim_timesteps(ddim_discr_method, num_ddim_timesteps, num_ddpm_timesteps, modify_last_time_step, verbose=True):
     if ddim_discr_method == 'uniform':
         c = num_ddpm_timesteps // num_ddim_timesteps
-        """기존에는 T를 포함하지 않으면서 1 ~ 981"""
-        # ddim_timesteps = np.asarray(list(range(0, num_ddpm_timesteps, c)))
-        # steps_out = ddim_timesteps + 1
-
-        """T를 포함하면서 0까지 간다: 0 ~ 999"""
-        ddim_timesteps = np.linspace(0, num_ddpm_timesteps - 1, num_ddim_timesteps).astype(int)
-        steps_out = ddim_timesteps
+        if not modify_last_time_step:
+            ddim_timesteps = np.asarray(list(range(0, num_ddpm_timesteps, c)))
+            steps_out = ddim_timesteps + 1
+        else:
+            ddim_timesteps = np.linspace(0, num_ddpm_timesteps - 1, num_ddim_timesteps).astype(int)
+            steps_out = ddim_timesteps
     elif ddim_discr_method == 'logarithmic':
         """0과 999를 포함하면서 초기 denoising에 집중"""
         # array([  0, 300, 476, 601, 698, 777, 843, 902, 953, 999])

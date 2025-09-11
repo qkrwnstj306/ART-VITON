@@ -13,7 +13,7 @@ def build_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--data_root_dir", type=str, default="./dataset/zalando-hd-resized/test")
-    parser.add_argument("--generated_dir", type=str, default="/home/qkrwnstj/StableVITON/results_999/original_blending")  # generated image directory
+    parser.add_argument("--generated_dir", type=str, default="./results")  # generated image directory
     parser.add_argument("--unpair", action="store_true")
     parser.add_argument("--seed", type=int, default=23)
     return parser.parse_args()

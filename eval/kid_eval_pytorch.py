@@ -54,16 +54,15 @@ def cal_kid(original_dir, generated_dir):
 
 if __name__ == '__main__':
     generated_dir_lst = [
-        '/home/qkrwnstj/StableVITON/stableVITON/pair',
-        '/home/qkrwnstj/StableVITON/ours/pair',
-        '/home/qkrwnstj/StableVITON/results_981/original/pair',
-        '/home/qkrwnstj/StableVITON/ours_latents/pair',
-        '/home/qkrwnstj/StableVITON/s_l_VITON/pair',
-        '/home/qkrwnstj/StableVITON/s_l_VITON_repaint/pair',
-        '/home/qkrwnstj/StableVITON/999_unmasked_lm_interpol_cfg_1/pair',
+        '/home/qkrwnstj/StableVITON/results_999/stableVITON_blending_blending/unpair',
+        '/home/qkrwnstj/StableVITON/results_999/999_ddpmPrior_woNoise_hardFFT_woStochastic_cfg1/unpair',
+        '/home/qkrwnstj/StableVITON/ablation_highFreq/unpair',
+        '/home/qkrwnstj/StableVITON/results_981/original/unpair',
+        '/home/qkrwnstj/StableVITON/shhq_results_ours_whole/unpair',
     ]
 
-    original_dir = '/home/qkrwnstj/StableVITON/dataset/zalando-hd-resized/test/image'
-    generated_dir = generated_dir_lst[6]
+    #original_dir = '/home/qkrwnstj/StableVITON/dataset/zalando-hd-resized/test/image'
+    original_dir = '/home/qkrwnstj/StableVITON/dataset/SHHQ-1.0/test/image'
+    generated_dir = generated_dir_lst[4]
 
     cal_kid(original_dir, generated_dir)

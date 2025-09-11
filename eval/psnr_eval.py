@@ -82,7 +82,7 @@ if __name__ == "__main__":
         '/home/qkrwnstj/StableVITON/ours_latents/pair',
         '/home/qkrwnstj/StableVITON/s_l_VITON/pair',
         '/home/qkrwnstj/StableVITON/s_l_VITON_repaint/pair',
-        '/home/qkrwnstj/StableVITON/999_pure51step_cfg1/pair',
+        '/home/qkrwnstj/StableVITON/ablation_highFreq/pair',
     ]
     
     generated_dir = generated_dir_lst[6]
