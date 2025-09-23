@@ -57,7 +57,7 @@ def build_args():
     parser.add_argument("--dreamsampler", action="store_true") 
 
     parser.add_argument("--sampling_schedule", type=str, default="uniform")
-    parser.add_arguement("--modify_final_t", action="store_true")
+    parser.add_argument("--modify_final_t", action="store_true")
     args = parser.parse_args()
     return args
 

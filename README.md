@@ -2,6 +2,8 @@
 
 Develpoing...
 
+1. contrast.py
+2. VITON-HD download method
 
 ```
 pip install --upgrade pip
