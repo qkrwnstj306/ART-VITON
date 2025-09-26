@@ -1,4 +1,4 @@
-# ART-VITON: Artifact-Free Virtual Try-On via Measurement-Guided Latent Diffusion
+# ART-VITON: Measurement-Guided Latent Diffusion for Artifact-Free Virtual Try-On
 
 ![Result 1](assets/1.jpg)
 ![Result 2](assets/2.jpg)
@@ -64,9 +64,6 @@ python generate_artifact_map.py
 ## For unpaired setting
 python generate_artifact_map.py --unpair
 ```
-
-Acknowledgements
-We thank the StableVITON team for providing their code and resources, which greatly helped in implementing and validating our experiments.
 
 # License
 
