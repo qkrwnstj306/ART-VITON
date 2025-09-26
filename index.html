@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ART-VITON: Artifact-Free Virtual Try-On</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 40px 60px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+        
+        .authors {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+        
+        .authors a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: border-bottom 0.3s;
+        }
+        
+        .authors a:hover {
+            border-bottom: 2px solid white;
+        }
+        
+        .affiliation {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        .btn i {
+            font-size: 1.1em;
+        }
+        
+        .teaser {
+            padding: 60px 40px;
+            background: #f8f9fa;
+        }
+        
+        .teaser img {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .teaser-caption {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        section {
+            padding: 60px 40px;
+        }
+        
+        section:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        h2 {
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            color: #667eea;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+        
+        .abstract-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: justify;
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .method-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .method-image {
+            width: 100%;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .result-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .result-item img {
+            width: 100%;
+            display: block;
+        }
+        
+        .comparison-container {
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+        
+        .comparison-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .comparison-item {
+            text-align: center;
+        }
+        
+        .comparison-item img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-label {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .video-container {
+            max-width: 900px;
+            margin: 40px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .video-container iframe {
+            width: 100%;
+            height: 500px;
+        }
+        
+        .citation-box {
+            background: #f1f3f5;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+        
+        .citation-box pre {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border: 2px solid #667eea30;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .highlight-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
+            
+            section {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <header>
+            <h1>ART-VITON</h1>
+            <p class="subtitle">Measurement-Guided Latent Diffusion for Artifact-Free Virtual Try-On</p>
+            <p class="authors">
+                <a href="#">Junseo Park</a> and <a href="#">Hyeryung Jang</a>
+            </p>
+            <p class="affiliation">Dongguk University</p>
+            
+            <div class="buttons">
+                <a href="./path/to/paper.pdf" class="btn">
+                    <i class="fas fa-file-pdf"></i> Paper
+                </a>
+                <a href="https://github.com/qkrwnstj306/ART-VITON" class="btn">
+                    <i class="fab fa-github"></i> Code
+                </a>
+                <a href="#" class="btn">
+                    <i class="fas fa-play"></i> Demo
+                </a>
+                <a href="#" class="btn">
+                    <i class="fas fa-database"></i> Dataset
+                </a>
+            </div>
+        </header>
+        
+        <!-- Teaser -->
+        <div class="teaser">
+            <img src="./assets/2.jpg" alt="ART-VITON Framework">
+            <p class="teaser-caption">Figure 1: ART-VITON generates high-quality virtual try-on results without boundary artifacts</p>
+        </div>
+        
+        <!-- Abstract -->
+        <section>
+            <h2>Abstract</h2>
+            <div class="abstract-content">
+                <p>Virtual try-on (VITON) aims to generate realistic images of a person wearing a target garment, requiring precise garment alignment in try-on regions and faithful preservation of identity and background in non-try-on regions. While latent diffusion models (LDMs) have advanced alignment and detail synthesis, preserving non-try-on regions remains challenging.</p>
+                
+                <div class="highlight-box">
+                    <h3>Key Contributions</h3>
+                    <p>We propose <strong>ART-VITON</strong>, a measurement-guided diffusion framework that ensures measurement adherence while maintaining artifact-free synthesis through residual prior-based initialization and artifact-free measurement-guided sampling.</p>
+                </div>
+                
+                <p>Our method integrates residual prior-based initialization to mitigate training-inference mismatch and artifact-free measurement-guided sampling that combines data consistency, frequency-level correction, and periodic standard denoising. Experiments on VITON-HD, DressCode, and SHHQ-1.0 demonstrate that ART-VITON effectively preserves identity and background, eliminates boundary artifacts, and consistently improves visual fidelity.</p>
+            </div>
+        </section>
+        
+        <!-- Method -->
+        <section>
+            <h2>Method</h2>
+            <div class="method-content">
+                <img src="./assets/overview.jpg" alt="Method Overview" class="method-image">
+                <p style="text-align: center; color: #666; margin-top: 20px;">
+                    Figure 2: Overview of the ART-VITON framework leveraging measurement guidance in latent diffusion
+                </p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Datasets Tested</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">12.5%</div>
+                        <div class="stat-label">FID Improvement</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Artifact Reduction</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Results -->
+        <section>
+            <h2>Results</h2>
+            
+            <div class="comparison-container">
+                <h3 style="text-align: center; margin-bottom: 30px; color: #666;">Comparison with State-of-the-Art Methods</h3>
+                
+                <div class="comparison-row">
+                    <div class="comparison-item">
+                        <img src="./assets/result1.png" alt="Result 1">
+                        <div class="comparison-label">Input</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="./assets/result2.png" alt="Result 2">
+                        <div class="comparison-label">Previous SOTA</div>
+                    </div>
+                    <div class="comparison-item">
+                        <img src="./assets/result3.png" alt="Result 3">
+                        <div class="comparison-label">Ours (ART-VITON)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-item">
+                    <img src="./assets/result1.png" alt="Result 1">
+                </div>
+                <div class="result-item">
+                    <img src="./assets/result2.png" alt="Result 2">
+                </div>
+                <div class="result-item">
+                    <img src="./assets/result3.png" alt="Result 3">
+                </div>
+            </div>
+        </section>
+        
+        <!-- Video -->
+        <section>
+            <h2>Video Presentation</h2>
+            <div class="video-container">
+                <!-- YouTube 또는 비디오 임베드 -->
+                <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </section>
+        
+        <!-- Citation -->
+        <section>
+            <h2>Citation</h2>
+            <div class="citation-box">
+                <p>If you find our work useful in your research, please consider citing:</p>
+                <pre>@inproceedings{park2025artviton,
+  title={ART-VITON: Measurement-Guided Latent Diffusion for Artifact-Free Virtual Try-On},
+  author={Park, Junseo and Jang, Hyeryung},
+  booktitle={Conference/Journal Name},
+  year={2025}
+}</pre>
+            </div>
+        </section>
+        
+        <!-- Footer -->
+        <footer>
+            <p>© 2025 ART-VITON. Made with ❤️ at <a href="#">Dongguk University</a></p>
+        </footer>
+    </div>
+</body>
+</html>
