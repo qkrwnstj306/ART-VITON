@@ -42,11 +42,6 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
         wrp_cloth_mask = rearrange(batch['wrp_cloth_mask'], 'b h w c -> b c h w')
         
         start_code = wrp_cloth * wrp_cloth_mask * (1 - agn_mask) + img * agn_mask
-        # from torchvision.utils import make_grid, save_image
-        # # 이미지 그리드 생성 (nrow=8은 한 줄에 8장씩)
-        # grid = make_grid(start_code, nrow=8, normalize=True)
-        # # 이미지 저장
-        # save_image(grid, 'start_code_grid.png')
         start_code = model.get_first_stage_encoding(model.encode_first_stage(start_code))
         start_code = model.q_sample(start_code, ts)
 
@@ -68,7 +63,6 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
         start_code = model.q_sample(start_code, ts)
     
     elif code_name == "smooth_latent":
-        # 1) measurement 영역 주변 latent를 gaussian blur(또는 dilated avg)로 smooth
         def smooth_latent(latent, kernel_size=7, sigma=3):
             channels = latent.shape[1]
             x = torch.arange(kernel_size).float() - kernel_size // 2
@@ -79,21 +73,18 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
             return F.conv2d(latent, kernel_2d, padding=kernel_size // 2, groups=channels)
 
         z_T = model.q_sample(z, ts)
-        # 2) measurement 영역만 latent 남기고 masked 영역은 0으로 만들기
         z_meas_only = z_T * mask
 
-        # 3) measurement 영역 latent를 부드럽게 확장 (mask boundary 주변 포함)
         z_smooth = smooth_latent(z_meas_only)
 
-        # 4) masked 영역을 z_smooth로 대체
         start_code = z_T * mask + z_smooth * (1 - mask)
 
     elif code_name == "unmasked_clothingAlignment":
         def get_center_of_mask(mask):
-            coords = torch.nonzero(mask[0], as_tuple=False)  # 각 배치에서 1인 좌표 찾기
+            coords = torch.nonzero(mask[0], as_tuple=False)  
             center = coords.float().mean(dim=0) if coords.numel() > 0 else torch.tensor([0, 0])
             
-            return center.int()  # 모든 배치에 대한 중심 좌표를 반환
+            return center.int()  
 
 
         def pad_or_crop_to_match(image, target_shape, is_mask=True):
@@ -105,7 +96,6 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
 
             padding_value = 0 if is_mask else 0.9294
             
-            # 패딩 적용
             padded_image = F.pad(image, (pad_w // 2, pad_w - pad_w // 2, pad_h // 2, pad_h - pad_h // 2), value=padding_value)
                 
             return padded_image[..., :th, :tw]
@@ -117,30 +107,27 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
             shift_y = target_center[0] - source_center[0]
             shift_x = target_center[1] - source_center[1]
             
-            # 이미지 크기 정보
             height, width = image.shape[1], image.shape[2]
 
-            # 이미지 텐서를 torch.roll로 이동
             shifted_image = torch.roll(image, shifts=(shift_y, shift_x), dims=(1, 2))
             
             padding_value = 0 if is_mask else 0.9294
 
-            # 롤링된 부분 삭제 (이미지 크기를 넘어선 부분 제거)
             if shift_y > 0:
-                shifted_image[:, :shift_y, :] = padding_value  # 위로 이동하면 상단을 0으로 채움
+                shifted_image[:, :shift_y, :] = padding_value  
             elif shift_y < 0:
-                shifted_image[:, shift_y:, :] = padding_value  # 아래로 이동하면 하단을 0으로 채움
+                shifted_image[:, shift_y:, :] = padding_value  
 
             if shift_x > 0:
-                shifted_image[:, :, :shift_x] = padding_value  # 왼쪽으로 이동하면 좌측을 0으로 채움
+                shifted_image[:, :, :shift_x] = padding_value  
             elif shift_x < 0:
-                shifted_image[:, :, shift_x:] = padding_value  # 오른쪽으로 이동하면 우측을 0으로 채움
+                shifted_image[:, :, shift_x:] = padding_value 
 
             return shifted_image
 
 
         def align_and_overlay(inpainting_mask, clothing_mask, clothing_image):
-            inpainting_size = torch.count_nonzero(inpainting_mask, dim=(1, 2, 3))  # 각 배치마다 마스크 크기 계산
+            inpainting_size = torch.count_nonzero(inpainting_mask, dim=(1, 2, 3))  
             clothing_size = torch.count_nonzero(clothing_mask, dim=(1, 2, 3))
             
             batch_size = inpainting_mask.shape[0]
@@ -153,14 +140,12 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
                 clothing_image_single = clothing_image[i]
                 
                 if clothing_size[i] > 0:
-                    # 크기 비율 계산 및 리사이즈
                     scale_factor = (inpainting_size[i] / clothing_size[i]).sqrt()
                     resize_transform = transforms.Resize((int(clothing_mask_single.shape[-2] * scale_factor),
                                                         int(clothing_mask_single.shape[-1] * scale_factor)))
                     clothing_mask_resized = resize_transform(clothing_mask_single)
                     clothing_image_resized = resize_transform(clothing_image_single)
-                    
-                    # 크기 맞추기
+
                     clothing_mask_resized = pad_or_crop_to_match(clothing_mask_resized, inpainting_mask_single.shape[-2:])
                     clothing_image_resized = pad_or_crop_to_match(clothing_image_resized, inpainting_mask_single.shape[-2:], is_mask=False)
                     
@@ -168,8 +153,8 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
                     clothing_mask_resized = shift_to_center(clothing_mask_resized, clothing_mask_resized, inpainting_mask_single)
                     clothing_image_resized = shift_to_center(clothing_image_resized, clothing_image_resized, inpainting_mask_single, is_mask=False)
                 else:
-                    clothing_mask_resized = torch.zeros_like(inpainting_mask_single)  # 빈 마스크
-                    clothing_image_resized = torch.zeros_like(inpainting_mask_single)  # 빈 이미지
+                    clothing_mask_resized = torch.zeros_like(inpainting_mask_single)  
+                    clothing_image_resized = torch.zeros_like(inpainting_mask_single) 
                 
                 resized_clothing_masks.append(clothing_mask_resized)
                 resized_clothing_images.append(clothing_image_resized)
@@ -185,10 +170,8 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
             stats = torch.load(stats_path, map_location="cpu")  # CPU에서 로드
             mean, std = stats["mean"].to(latent.device), stats["std"].to(latent.device)
 
-            # Masked region을 저장된 통계를 기반으로 초기화
             noise = torch.randn_like(latent) * std.view(1, -1, 1, 1) + mean.view(1, -1, 1, 1)
 
-            # torch.where을 사용하여 마스킹된 부분만 교체
             latent = noise * (1. - mask) + latent * mask
 
             print("Masked region initialized.")
@@ -203,9 +186,7 @@ def get_code(model, z, ts, c, batch, code_name="pure"):
         resized_clothing_mask = torch.stack([resize_transform(mask) for mask in clothing_mask])
         latent_clothing = model.get_first_stage_encoding(model.encode_first_stage(clothing_image))
 
-        # Unmaksed region은 z로, masked region은 statistics로 채우기기
         start_code = initialize_masked_region(latent_clothing, resized_clothing_mask)
-        # resized_clothing_mask 영역을 latent_clothing으로 대체하기
         start_code[mask.repeat(1, 4, 1, 1).to(torch.bool)] = z[mask.repeat(1, 4, 1, 1).to(torch.bool)]
         start_code = model.q_sample(start_code, ts) 
 

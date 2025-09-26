@@ -276,10 +276,7 @@ class LMDDIMSampler(object):
             if ucg_schedule is not None:
                 assert len(ucg_schedule) == len(time_range)
                 unconditional_guidance_scale = ucg_schedule[i]
-            with torch.no_grad() if not (mcg or dps or noisy_mcg or noisy_dps) else torch.enable_grad():
-                if mcg or dps or noisy_mcg or noisy_dps:
-                    assert img.size(0) == 1
-                    img = img.requires_grad_()
+            with torch.no_grad():
                 outs = self.p_sample_ddim(img, cond, ts, index=index, use_original_steps=ddim_use_original_steps,
                                         quantize_denoised=quantize_denoised, temperature=temperature,
                                         noise_dropout=noise_dropout, score_corrector=score_corrector,
@@ -294,35 +291,7 @@ class LMDDIMSampler(object):
                 if mask is not None:
                     mask = mask.round()
 
-                alphas_prev = self.model.alphas_cumprod_prev if ddim_use_original_steps else self.ddim_alphas_prev
-                a_prev = torch.full((b, 1, 1, 1), alphas_prev[index], device=device)
-
-                
-                if (mcg or dps) and (index % 3 == 0 or index == 0):
-                    norm = torch.norm((x0 * mask) - (pred_x0 * mask))
-                    norm_grad = grad(outputs=norm, inputs=img)[0]
-                    img = sample - norm_grad
-                elif (noisy_mcg or noisy_dps) and (index % 3 == 0 or index == 0):
-                    if len(time_range) - 1 != i:
-                        prev_ts = torch.full((b,), time_range[i+1], device=device, dtype=torch.long)
-                        img_orig = self.model.q_sample(x0, prev_ts)
-                    else:
-                        img_orig = x0
-                    norm = torch.norm((img_orig * mask) - (sample * mask))
-                    norm_grad = grad(outputs=norm, inputs=img)[0]
-                    img = sample - norm_grad
-                else:
-                    img = sample
-
-                if mask is not None and (replacement or mcg or noisy_mcg) and (index % 3 == 0 or index == 0):
-                    assert x0 is not None
-                    if replacement or mcg:
-                        if len(time_range) - 1 != i:
-                            prev_ts = torch.full((b,), time_range[i+1], device=device, dtype=torch.long)
-                            img_orig = self.model.q_sample(x0, prev_ts)
-                        else:
-                            img_orig = x0
-                    img = img_orig * mask + (1. - mask) * img
+                img = sample
                 
             img.detach_()
 
@@ -376,31 +345,7 @@ class LMDDIMSampler(object):
         a_prev = torch.full((b, 1, 1, 1), alphas_prev[index], device=device)
         sqrt_one_minus_at = torch.full((b, 1, 1, 1), sqrt_one_minus_alphas[index],device=device)
         
-        if dreamsampler:
-            x_in = x
-            t_in = t
-            model_t, cond_output_dict = self.model.apply_model(x_in, t_in, c)
-            model_uncond, _ = self.model.apply_model(x_in, t_in, unconditional_conditioning)
-            pred_x0_uc = (x - sqrt_one_minus_at * model_uncond) / a_t.sqrt()
-            pred_x0_c = (x - sqrt_one_minus_at * model_t) / a_t.sqrt()
-            if ((index + 1) % 3 == 0 or index == 0):
-                assert apply_lm == False, "TREG is not compatible with Latent Manipulation"
-                with torch.enable_grad():
-                    updated_pred_x0_uc = lmgrad.cal_grad(pred_x0=pred_x0_uc, model=self.model, index=index)
-                if index==0:
-                    return updated_pred_x0_uc, pred_x0_c, cond_output_dict
-                pred_x0 = a_prev * updated_pred_x0_uc + (1. - a_prev) * pred_x0_uc
-                pred_x0 = lm_mask * pred_x0 + (1. - lm_mask) * ((1 - a_t) * pred_x0) + ((1. - lm_mask) * (a_t * pred_x0_c)) 
-                noise = sqrt_one_minus_at * model_uncond + a_t.sqrt() * torch.randn_like(x, device=device)
-                x_prev = a_prev.sqrt() * pred_x0 + (1. - a_prev).sqrt() * noise
-            else: 
-                model_uncond, cond_output_dict_uncond = self.model.apply_model(x_in, t_in, unconditional_conditioning)
-                pred_x0 = (x - sqrt_one_minus_at * model_uncond) / a_t.sqrt()
-                x_prev = a_prev.sqrt() * pred_x0 + (1. - a_prev).sqrt() * model_uncond
-            if index == 0:
-                return pred_x0, pred_x0, cond_output_dict 
-            return x_prev, pred_x0, cond_output_dict
-        elif unconditional_conditioning is None or unconditional_guidance_scale == 1.:
+        if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
             model_output, cond_output_dict = self.model.apply_model(x, t, c)
         else:
             
@@ -434,39 +379,8 @@ class LMDDIMSampler(object):
         # current prediction for x_0
         if self.model.parameterization != "v":
             pred_x0 = (x - sqrt_one_minus_at * e_t) / a_t.sqrt()
-
-            # """For intro figure, save the image"""
-            # """Plot Pred_x0"""
-            # img = self.model.decode_first_stage(pred_x0)[0]
-            # img = (img + 1.0) / 2.0
-            # img = img.clamp(0, 1)
-            # import os 
-            # from torchvision.utils import save_image
-            # # 저장 경로
-            # save_dir = f"./intro_figure_final/stableviton/during_generation" #hard_consistency, interpolation, masked_restore, unmasked_masked_restore
-            # os.makedirs(save_dir, exist_ok=True)
-            # save_image(img, os.path.join(save_dir, f"output_{t}.jpg"))
             if get_eps:
                 return pred_x0, e_t
-            
-            if treg and ((index + 1) % 3 == 0 or index == 0):
-                assert apply_lm == False, "TREG is not compatible with Latent Manipulation"
-                with torch.enable_grad():
-                    updated_pred_x0 = lmgrad.hard_consistency(pred_x0=pred_x0, model=self.model, index=index)
-                if index==0:
-                    return updated_pred_x0, pred_x0, cond_output_dict
-                pred_x0 = a_prev * updated_pred_x0 + (1. - a_prev) * pred_x0 
-                """For intro figure, save the image"""
-                """Plot Pred_x0"""
-                img = self.model.decode_first_stage(updated_pred_x0)[0]
-                img = (img + 1.0) / 2.0
-                img = img.clamp(0, 1)
-                import os 
-                from torchvision.utils import save_image
-                # 저장 경로
-                save_dir = f"./intro_figure_final/treg/during_generation" #hard_consistency, interpolation, masked_restore, unmasked_masked_restore
-                os.makedirs(save_dir, exist_ok=True)
-                save_image(img, os.path.join(save_dir, f"output_{t}.jpg"))
                 
             """Apply Latent Manipulation"""
             if apply_lm and ((index + 1) % 3 == 0 or index == 0):
@@ -474,56 +388,13 @@ class LMDDIMSampler(object):
 
                 updated_pred_x0 = lmgrad.hard_consistency(pred_x0=pred_x0, model=self.model, index=index)
 
-                """Plot"""
-                # import os 
-                # from torchvision.utils import save_image
-                # measure = lmgrad.measurement
-                # measure_mask = lmgrad.mask
-                # measure = (measure + 1.0) / 2.0
-                # measure = measure.clamp(0, 1)
-                # save_dir = f"./figure"
-                # os.makedirs(save_dir, exist_ok=True)
-                # save_image(measure, os.path.join(save_dir, f"measurement.png"))
-                # save_image(measure_mask, os.path.join(save_dir, f"measurement_mask.png"))
                 if index==0:
                     return updated_pred_x0, pred_x0, cond_output_dict
 
-                else: # 원본의 특성을 보존하면서, 업데이트가 필요한 부분만 최적화하는 방식으로 적합합니다. Encoding과정에서 masked region에서의 일부 정보가 손실될 수 있기 때문에, 기존 latent code 정보를 그대로 사용한다.
+                else: 
                     updated_pred_x0 = ffq.replace_high_frequency_fft(updated_pred_x0, pred_x0)
                     pred_x0 = lm_mask * ( a_prev * updated_pred_x0 + (1. - a_prev) * pred_x0 ) + (1. - lm_mask) * pred_x0
                     
-                    #pred_x0 = a_prev * updated_pred_x0 + (1. - a_prev) * pred_x0
-                    #pred_x0 = updated_pred_x0 
-                    
-                     
-                    #high_freq = ffq.extract_high_frequency_fft(pred_x0)
-                    #low_freq = ffq.remove_high_frequency_fft(pred_x0)
-                    # new_updated_pred_x0 = ffq.replace_high_frequency_fft(updated_pred_x0, pred_x0)
-                    # replaced_freq = lm_mask * ( a_prev * new_updated_pred_x0 + (1. - a_prev) * pred_x0 ) + (1. - lm_mask) * pred_x0
-                
-                """For intro figure, save the image"""
-                """Plot Pred_x0"""
-                # img = self.model.decode_first_stage(pred_x0)[0]
-                # img = (img + 1.0) / 2.0
-                # img = img.clamp(0, 1)
-                # import os 
-                # from torchvision.utils import save_image
-                # # 저장 경로
-                # save_dir = f"./intro_figure_final/ours/during_generation" #hard_consistency, interpolation, masked_restore, unmasked_masked_restore
-                # os.makedirs(save_dir, exist_ok=True)
-                # save_image(img, os.path.join(save_dir, f"output_{t}.jpg"))
-
-                
-                """Plot Pred_x0"""
-                # img = self.model.decode_first_stage(pred_x0)[0]
-                # img = (img + 1.0) / 2.0
-                # img = img.clamp(0, 1)
-                # import os 
-                # from torchvision.utils import save_image
-                # # 저장 경로
-                # save_dir = f"./figure/unmasked_masked_restore" #hard_consistency, interpolation, masked_restore, unmasked_masked_restore
-                # os.makedirs(save_dir, exist_ok=True)
-                # save_image(img, os.path.join(save_dir, f"output_{t}.png"))
                 
         else:
             pred_x0 = self.model.predict_start_from_z_and_v(x, t, model_output)
@@ -535,7 +406,7 @@ class LMDDIMSampler(object):
             raise NotImplementedError()
 
         # direction pointing to x_t
-        """Stochastic Noise""" # iter를 맞춰줘야 한다.
+        """Stochastic Noise"""
         if apply_stochastic_noise and ((index + 1) % 3 == 0 or index == 0):
             # Inter
             stochastic_e_t = (1. - a_prev).sqrt() * a_prev.sqrt() * noise_like(x.shape, device, False) 

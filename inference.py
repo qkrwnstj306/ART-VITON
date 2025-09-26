@@ -82,7 +82,6 @@ def main(args):
     model = model.cuda()
     model.eval()
 
-    '''Choose sampler among PLMS and DDIM'''
     sampler = LMDDIMSampler(model)
     lmgrad = LMGrad()
     dataset = getattr(import_module("dataset"), config.dataset_name)(

@@ -1,0 +1,28 @@
+# numpy 등 기본 패키지
+numpy
+matplotlib
+scikit-learn
+requests
+opencv-python
+albumentations
+einops
+omegaconf==2.2.3
+umap-learn
+scikit-image
+huggingface_hub==0.15.1
+clean-fid
+
+# PyTorch 관련 (CUDA는 설치 명령에서 처리)
+torch==2.0.0
+torchvision==0.15.1
+pytorch-lightning==1.5.0
+xformers==0.0.19
+open-clip-torch==2.19.0
+torchaudio==2.0.1
+
+# Diffusion
+diffusers==0.20.2
+transformers==4.33.2
+scipy==1.10.1
+lpips==0.1.4
+torch-fidelity==0.3.0
