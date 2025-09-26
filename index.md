@@ -1,76 +1,51 @@
+---
+title: "ART-VITON: Artifact-Free Virtual Try-On via Measurement-Guided Latent Diffusion"
+---
+
 # ART-VITON: Measurement-Guided Latent Diffusion for Artifact-Free Virtual Try-On
 
-![Result 1](assets/1.jpg)
-![Result 2](assets/2.jpg)
+**Junseo Park** and **Hyeryung Jang**  
+Dongguk University
 
-# SetUP
+---
 
-## Create a Conda Environment
+![Main Figure](./assets/2.jpg)  
+*Figure 1. Overview of the ART-VITON framework.*
 
-```
-git clone https://github.com/qkrwnstj306/ART-VITON.git
-cd ART-VITON
-conda create --name art-viton python=3.10 -y
-conda activate art-viton
-pip install --upgrade pip
-pip install torch==2.0.0+cu117 torchvision==0.15.1+cu117 torchaudio==2.0.1+cu117 -f https://download.pytorch.org/whl/torch_stable.html
-pip install -r requirements.txt
-conda install -c anaconda ipython -y
-```
+[**Paper**](./path/to/paper.pdf) | [**GitHub**](https://github.com/qkrwnstj306/ART-VITON)
 
-## Download StableVITON Checkpoints and VITON-HD Dataset
+---
 
-Please refer to the official StableVITON repository:
+## Abstract
 
-[StableVITON GitHub Repository](https://github.com/rlawjdghek/StableVITON.git)
+Virtual try-on (VITON) aims to generate realistic images of a person wearing a target garment, requiring precise garment alignment in try-on regions and faithful preservation of identity and background in non-try-on regions. While latent diffusion models (LDMs) have advanced alignment and detail synthesis, preserving non-try-on regions remains challenging. A common post-hoc strategy directly replaces these regions with original content, but abrupt transitions often produce boundary artifacts. To overcome this, we reformulate VITON as a linear inverse problem and adopt trajectory-aligned solvers that progressively enforce measurement consistency, reducing abrupt changes in non-try-on regions. However, existing solvers still suffer from semantic drift during generation, leading to artifacts. We propose $\textsf{ART-VITON}$, a measurement-guided diffusion framework that ensures measurement adherence while maintaining artifact-free synthesis. Our method integrates residual prior-based initialization to mitigate training-inference mismatch and artifact-free measurement-guided sampling that combines data consistency, frequency-level correction, and periodic standard denoising. Experiments on VITON-HD, DressCode, and SHHQ-1.0 demonstrate that $\textsf{ART-VITON}$ effectively preserves identity and background, eliminates boundary artifacts, and consistently improves visual fidelity and robustness over state-of-the-art baselines.
+---
 
-# Inference 
+## Method
 
-## Generate images
+![Method Figure](./assets/overview.jpg)  
+*Figure 2. Illustration of the ART-VITON method. The framework leverages measurement guidance in latent diffusion to preserve garment consistency while mitigating artifacts.*
 
-```
-## Paired setting
-CUDA_VISIBLE_DEVICES=0 python inference.py \
-    --data_root_dir ./dataset/zalando-hd-resized \
-    --config_path ./configs/VITONHD.yaml \
-    --batch_size 1 \
-    --cfg_scale 1 \
-    --model_load_path ./ckpts/VITONHD.ckpt \
-    --modify_final_t \
-    --use_pure_to_prior \
-    --apply_lm \
-    --save_dir ./results
+---
 
-## Unpaired setting
-CUDA_VISIBLE_DEVICES=0 python inference.py \
-    --data_root_dir ./dataset/zalando-hd-resized \
-    --config_path ./configs/VITONHD.yaml \
-    --batch_size 1 \
-    --cfg_scale 1 \
-    --model_load_path ./ckpts/VITONHD.ckpt \
-    --modify_final_t \
-    --use_pure_to_prior \
-    --apply_lm \
-    --unpair \
-    --save_dir ./results
-```
+## Results
 
-## Generate artifact maps
+![Result 1](./assets/result1.png)  
+![Result 2](./assets/result2.png)  
+![Result 3](./assets/result3.png)  
 
-```
-## For paired setting
-python generate_artifact_map.py
+Our method outperforms existing approaches in both visual quality and artifact reduction, as demonstrated in the examples above.  
 
-## For unpaired setting
-python generate_artifact_map.py --unpair
-```
+---
 
-# License
+## Citation
 
-ART-VITON builds upon ideas and resources from StableVITON, which is licensed under
-[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+If you use ART-VITON in your research, please cite our work:
 
-We gratefully acknowledge the StableVITON team for their code and datasets, which
-greatly facilitated our work. ART-VITON is released under the same CC BY-NC-SA 4.0 license.
-Commercial use is not permitted.
-
+```bibtex
+@inproceedings{park2025artviton,
+  title={ART-VITON: Measurement-Guided Latent Diffusion for Artifact-Free Virtual Try-On},
+  author={Junseo Park and Hyeryung Jang},
+  booktitle={Conference/Journal Name},
+  year={2025}
+}
