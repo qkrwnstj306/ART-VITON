@@ -17,7 +17,7 @@
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
         }
         
@@ -105,7 +105,7 @@
         
         .teaser {
             padding: 60px 40px;
-            background: #f8f9fa;
+            background: white;
         }
         
         .teaser img {
@@ -113,8 +113,8 @@
             max-width: 1000px;
             margin: 0 auto;
             display: block;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 0;
+            box-shadow: none;
         }
         
         .teaser-caption {
@@ -128,8 +128,19 @@
             padding: 60px 40px;
         }
         
-        section:nth-child(even) {
-            background: #f8f9fa;
+        /* 텍스트 중심 섹션 배경색 */
+        section.text-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        /* 이미지 중심 섹션은 흰색 유지 */
+        section.image-section {
+            background: white;
+        }
+        
+        /* Citation 섹션 특별 스타일 */
+        section.citation-section {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         }
         
         h2 {
@@ -159,7 +170,7 @@
             text-align: justify;
             font-size: 1.05em;
             line-height: 1.8;
-            color: #555;
+            color: #444;
         }
         
         .method-content {
@@ -170,8 +181,8 @@
         .method-image {
             width: 100%;
             margin: 30px 0;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 0;
+            box-shadow: none;
         }
         
         .results-grid {
@@ -184,14 +195,15 @@
         .result-item {
             position: relative;
             overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             transition: transform 0.3s;
+            background: white;
         }
         
         .result-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
         }
         
         .result-item img {
@@ -217,8 +229,9 @@
         
         .comparison-item img {
             width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
         }
         
         .comparison-label {
@@ -233,6 +246,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: white;
         }
         
         .video-container iframe {
@@ -241,15 +255,16 @@
         }
         
         .citation-box {
-            background: #f1f3f5;
+            background: rgba(255, 255, 255, 0.9);
             border-left: 4px solid #667eea;
             padding: 20px;
             border-radius: 5px;
             margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .citation-box pre {
-            background: white;
+            background: rgba(255, 255, 255, 0.8);
             padding: 15px;
             border-radius: 5px;
             overflow-x: auto;
@@ -257,15 +272,17 @@
             font-family: 'Courier New', monospace;
             font-size: 0.9em;
             line-height: 1.5;
+            border: 1px solid rgba(102, 126, 234, 0.2);
         }
         
         .highlight-box {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border: 2px solid #667eea30;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #667eea;
             border-radius: 10px;
             padding: 30px;
             margin: 40px 0;
             text-align: center;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
         }
         
         .highlight-box h3 {
@@ -289,7 +306,10 @@
         .stat-number {
             font-size: 2.5em;
             font-weight: 700;
-            color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .stat-label {
@@ -348,12 +368,6 @@
                 <a href="https://github.com/qkrwnstj306/ART-VITON" class="btn">
                     <i class="fab fa-github"></i> Code
                 </a>
-                <a href="#" class="btn">
-                    <i class="fas fa-play"></i> Demo
-                </a>
-                <a href="#" class="btn">
-                    <i class="fas fa-database"></i> Dataset
-                </a>
             </div>
         </header>
         
@@ -364,7 +378,7 @@
         </div>
         
         <!-- Abstract -->
-        <section>
+        <section class="text-section">
             <h2>Abstract</h2>
             <div class="abstract-content">
                 <p>Virtual try-on (VITON) aims to generate realistic images of a person wearing a target garment, requiring precise garment alignment in try-on regions and faithful preservation of identity and background in non-try-on regions. While latent diffusion models (LDMs) have advanced alignment and detail synthesis, preserving non-try-on regions remains challenging.</p>
@@ -379,7 +393,7 @@
         </section>
         
         <!-- Method -->
-        <section>
+        <section class="image-section">
             <h2>Method</h2>
             <div class="method-content">
                 <img src="./assets/overview.jpg" alt="Method Overview" class="method-image">
@@ -393,11 +407,11 @@
                         <div class="stat-label">Datasets Tested</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">12.5%</div>
-                        <div class="stat-label">FID Improvement</div>
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Model-Agnostic</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">95%</div>
+                        <div class="stat-number">High Artifact Reduction</div>
                         <div class="stat-label">Artifact Reduction</div>
                     </div>
                 </div>
@@ -405,7 +419,7 @@
         </section>
         
         <!-- Results -->
-        <section>
+        <section class="image-section" style="background: linear-gradient(to bottom, #fafafa, white);">
             <h2>Results</h2>
             
             <div class="comparison-container">
@@ -441,7 +455,7 @@
         </section>
         
         <!-- Video -->
-        <section>
+        <section class="image-section" style="background: linear-gradient(to bottom, white, #fafafa);">
             <h2>Video Presentation</h2>
             <div class="video-container">
                 <!-- YouTube 또는 비디오 임베드 -->
@@ -454,7 +468,7 @@
         </section>
         
         <!-- Citation -->
-        <section>
+        <section class="citation-section">
             <h2>Citation</h2>
             <div class="citation-box">
                 <p>If you find our work useful in your research, please consider citing:</p>
