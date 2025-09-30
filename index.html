@@ -721,33 +721,44 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Artifact Helper ---
     let artifactBox;
     function showArtifact(e, container) {
-        if (!artifactBox) {
-            artifactBox = document.createElement('div');
-            artifactBox.style.position = 'fixed';
-            artifactBox.style.border = '2px solid #333';
-            artifactBox.style.background = '#fff';
-            artifactBox.style.zIndex = '9999';
-            artifactBox.style.pointerEvents = 'none';
-            document.body.appendChild(artifactBox);
-        }
-
-        const size = 120; // 확대 박스 크기
-        artifactBox.style.width = size + 'px';
-        artifactBox.style.height = size + 'px';
-        artifactBox.style.left = (e.clientX + 20) + 'px';
-        artifactBox.style.top = (e.clientY - size / 2) + 'px';
-
-        // 현재 마우스 위치 기준 artifact 이미지 crop & 확대
-        const rect = container.getBoundingClientRect();
-        const relativeX = e.clientX - rect.left;
-        const relativeY = e.clientY - rect.top;
-        const img = container.querySelector('.image-base'); // ours 기준 (왼쪽/오른쪽 나눠서 확장 가능)
-
-        artifactBox.style.backgroundImage = `url(${img.src})`;
-        artifactBox.style.backgroundSize = `${rect.width * 2}px ${rect.height * 2}px`;
-        artifactBox.style.backgroundPosition = `-${relativeX}px -${relativeY}px`;
-        artifactBox.style.display = 'block';
+    if (!artifactBox) {
+        artifactBox = document.createElement('div');
+        artifactBox.style.position = 'fixed';
+        artifactBox.style.border = '2px solid #333';
+        artifactBox.style.background = '#fff';
+        artifactBox.style.zIndex = '9999';
+        artifactBox.style.pointerEvents = 'none';
+        document.body.appendChild(artifactBox);
     }
+
+    // dataset 값 읽기
+    const artifactLeft = container.dataset.artifactLeft;
+    const artifactRight = container.dataset.artifactRight;
+    const magSize = parseInt(container.dataset.magSize || 200, 10);
+    const magZoom = parseFloat(container.dataset.magZoom || 1.0);
+
+    artifactBox.style.width = magSize + 'px';
+    artifactBox.style.height = magSize + 'px';
+    artifactBox.style.left = (e.clientX + 20) + 'px';
+    artifactBox.style.top = (e.clientY - magSize / 2) + 'px';
+
+    const rect = container.getBoundingClientRect();
+    const relativeX = e.clientX - rect.left;
+    const relativeY = e.clientY - rect.top;
+
+    // 바 기준으로 왼쪽/오른쪽 구분
+    const percentage = (relativeX / rect.width) * 100;
+    const imgSrc = percentage < 50 ? artifactLeft : artifactRight;
+
+    // background-size 계산 (줌 배율 반영)
+    const bgWidth = rect.width * magZoom;
+    const bgHeight = rect.height * magZoom;
+
+    artifactBox.style.backgroundImage = `url(${imgSrc})`;
+    artifactBox.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
+    artifactBox.style.backgroundPosition = `-${relativeX * magZoom - magSize / 2}px -${relativeY * magZoom - magSize / 2}px`;
+    artifactBox.style.display = 'block';
+}
 
     function hideArtifact() {
         if (artifactBox) artifactBox.style.display = 'none';
