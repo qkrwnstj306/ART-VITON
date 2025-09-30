@@ -252,16 +252,15 @@
 
 .image-comparison {
     position: relative;
-    margin-bottom: 60px;
-    user-select: none;
+    display: inline-block;
+    width: 100%;
+    max-width: 600px; /* 필요시 조정 */
 }
 
 .comparison-images {
     position: relative;
     width: 100%;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    height: auto;
 }
 
 .image-base {
@@ -277,15 +276,13 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    /* JS에서 clipPath로 보여줄 영역 조절 */
 }
 
 .image-overlay img {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;         /* overlay 크기에 맞춤 */
-    object-fit: cover;    /* 비율 유지하면서 꽉 채우기 */
+    height: 100%;
+    object-fit: cover;
 }
 
 .slider-bar {
@@ -615,25 +612,22 @@ document.addEventListener('DOMContentLoaded', function() {
         let isDragging = false;
         
         function updateSlider(e) {
-    if (!isDragging && e.type !== 'click') return;
-    
-    const rect = container.getBoundingClientRect();
-    let x = e.clientX - rect.left;
+            if (!isDragging && e.type !== 'click') return;
 
-    // 터치 이벤트 처리
-    if (e.type.includes('touch')) {
-        x = e.touches[0].clientX - rect.left;
-    }
+            const rect = container.getBoundingClientRect();
+            let x = e.clientX - rect.left;
 
-    // 슬라이더 범위 제한
-    x = Math.max(0, Math.min(x, rect.width));
+            if (e.type.includes('touch')) {
+                x = e.touches[0].clientX - rect.left;
+            }
 
-    const percentage = (x / rect.width) * 100;
+            x = Math.max(0, Math.min(x, rect.width));
+            const percentage = (x / rect.width) * 100;
 
-    // overlay 이미지 크기는 그대로 두고, 보여줄 부분만 잘라냄
-    overlay.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-    slider.style.left = percentage + '%';
-}
+            // 오버레이 보이는 부분만 잘라냄
+            overlay.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+            slider.style.left = percentage + '%';
+        }
         
         // 마우스 이벤트
         slider.addEventListener('mousedown', () => isDragging = true);
@@ -641,23 +635,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('mousemove', updateSlider);
         container.addEventListener('click', updateSlider);
         
-        // 터치 이벤트 (모바일)
+        // 터치 이벤트
         slider.addEventListener('touchstart', (e) => {
             isDragging = true;
             e.preventDefault();
         });
         document.addEventListener('touchend', () => isDragging = false);
         document.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                updateSlider(e);
-            }
+            if (isDragging) updateSlider(e);
         });
         
         // 초기값 (50%)
-        overlay.style.width = "50%";
+        overlay.style.clipPath = "inset(0 50% 0 0)";
         slider.style.left = "50%";
     });
 });
+
 </script>
 </body>
 </html>
