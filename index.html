@@ -277,15 +277,15 @@
     width: 50%;
     height: 100%;
     overflow: hidden;
-    border-right: 3px solid white;
 }
 
 .image-overlay img {
-    display: block;
-    width: 200%;
-    height: auto;  /* ← 이 부분 수정 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;  /* ← 여기가 핵심! 원본 이미지 크기의 100% */
+    height: auto;
     max-width: none;
-    /* object-fit 제거 */
 }
 
 .slider-bar {
