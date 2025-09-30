@@ -257,6 +257,13 @@
     max-width: 600px; /* 필요시 조정 */
 }
 
+.image-comparison img {
+    user-drag: none;        /* Safari */
+    -webkit-user-drag: none;/* Safari, Chrome */
+    user-select: none;      /* 텍스트/이미지 선택 방지 */
+    pointer-events: none;   /* 드래그 이벤트 막기 */
+}
+
 .comparison-images {
     position: relative;
     width: 100%;
