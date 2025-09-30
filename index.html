@@ -128,17 +128,14 @@
             padding: 60px 40px;
         }
         
-        /* 텍스트 중심 섹션 배경색 */
         section.text-section {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
         
-        /* 이미지 중심 섹션은 흰색 유지 */
         section.image-section {
             background: white;
         }
         
-        /* Citation 섹션 특별 스타일 */
         section.citation-section {
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         }
@@ -243,111 +240,96 @@
             color: #667eea;
         }
 
-        
-.comparison-slider-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-}
+        .comparison-slider-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-.image-comparison {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    max-width: 600px; /* 필요시 조정 */
-}
+        .image-comparison {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
 
-.image-labels * {
-    -webkit-user-drag: none;  /* Safari, Chrome 이미지 드래그 방지 */
-    user-drag: none;
+        .image-labels * {
+            -webkit-user-drag: none;
+            user-drag: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    -webkit-user-select: none; /* Safari/Chrome 선택 방지 */
-    -moz-user-select: none;    /* Firefox 선택 방지 */
-    -ms-user-select: none;     /* IE 선택 방지 */
-    user-select: none;         /* 표준 선택 방지 */
+        .image-comparison img {
+            user-drag: none;
+            -webkit-user-drag: none;
+            user-select: none;
+            pointer-events: none;
+        }
 
-    -webkit-tap-highlight-color: transparent; /* 모바일 탭 하이라이트 제거 */
-}
+        .comparison-images {
+            position: relative;
+            width: 100%;
+            height: auto;
+            cursor: crosshair;
+        }
 
-.image-comparison img {
-    user-drag: none;        /* Safari */
-    -webkit-user-drag: none;/* Safari, Chrome */
-    user-select: none;      /* 텍스트/이미지 선택 방지 */
-    pointer-events: none;   /* 드래그 이벤트 막기 */
-}
+        .image-base {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
 
-.comparison-images {
-    position: relative;
-    width: 100%;
-    height: auto;
-}
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-.image-base {
-    display: block;
-    width: 100%;
-    height: auto;
-}
+        .image-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.image-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    /* JS에서 clipPath로 보여줄 영역 조절 */
-}
+        .slider-bar {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: white;
+            cursor: ew-resize;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
 
-.image-overlay img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        /* Artifact Magnifier */
+        .artifact-magnifier {
+            position: fixed;
+            width: 250px;
+            height: 250px;
+            border: 3px solid #667eea;
+            border-radius: 8px;
+            background-color: #fff;
+            background-repeat: no-repeat;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            z-index: 9999;
+            pointer-events: none;
+            display: none;
+            overflow: hidden;
+        }
 
-.slider-bar {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 4px;
-    height: 100%;
-    background: white;
-    cursor: ew-resize;
-    transform: translateX(-50%);
-    z-index: 10;
-}
-
-/* Magnifier (돋보기) */
-.magnifier {
-    position: absolute;
-    width: 200px;              /* 기본값, data-mag-size로 덮어쓸 수 있음 */
-    height: 200px;
-    border-radius: 6px;
-    border: 2px solid rgba(255,255,255,0.9);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    overflow: hidden;
-    background-repeat: no-repeat;
-    background-position: 0 0;
-    background-size: cover;   /* JS에서 동적으로 설정 */
-    pointer-events: none;     /* 돋보기가 마우스 이벤트를 막지 않도록 */
-    z-index: 999;
-    display: none;
-}
-
-/* (optional) 작을 때 깜빡임 방지 */
-.magnifier.show {
-    display: block;
-}
-
-.artifact-magnifier {
-    position: fixed;
-    border: 2px solid #333;
-    border-radius: 50%;
-    background-color: #fff;
-    background-repeat: no-repeat;
-    z-index: 9999;
-    pointer-events: none;
-    display: none;
-}
+        .artifact-magnifier.active {
+            display: block;
+        }
 
         .slider-button {
             position: absolute;
@@ -546,7 +528,7 @@
                         <div class="stat-label">Model-Agnostic</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">High Artifact Reduction</div>
+                        <div class="stat-number">High</div>
                         <div class="stat-label">Artifact Reduction</div>
                     </div>
                 </div>
@@ -584,14 +566,17 @@
         <!-- Image Comparison -->
         <section class="image-section" style="background: linear-gradient(to bottom, white, #fafafa);">
             <h2>StableVITON VS StableVITON (Ours)</h2>
+            <p style="text-align: center; color: #888; margin-bottom: 30px;">
+                Click and hold on the images to see the artifact maps magnified
+            </p>
             
             <div class="comparison-slider-container">
                 <!-- 첫 번째 비교 -->
                 <div class="image-comparison"
-                data-artifact-left="./stableviton_results/pair/artifact_maps/1.jpg"
-                data-artifact-right="./results/pair/artifact_maps/1.jpg"
-                data-mag-size="200"
-                data-mag-zoom="1.0">
+                    data-artifact-left="./stableviton_results/pair/artifact_maps/1.jpg"
+                    data-artifact-right="./results/pair/artifact_maps/1.jpg"
+                    data-mag-size="250"
+                    data-mag-zoom="2.5">
                     <div class="comparison-images">
                         <img src="./results/pair/1.jpg" alt="Ours" class="image-base">
                         <div class="image-overlay">
@@ -616,8 +601,8 @@
                 <div class="image-comparison"
                     data-artifact-left="./stableviton_results/unpair/artifact_maps/1.jpg"
                     data-artifact-right="./results/unpair/artifact_maps/1.jpg"
-                    data-mag-size="200"
-                    data-mag-zoom="1.0">
+                    data-mag-size="250"
+                    data-mag-zoom="2.5">
                     <div class="comparison-images">
                         <img src="./results/unpair/1.jpg" alt="Ours" class="image-base">
                         <div class="image-overlay">
@@ -660,96 +645,175 @@
         </footer>
     </div>
 
+    <!-- Artifact Magnifier Element -->
+    <div class="artifact-magnifier" id="artifactMagnifier"></div>
+
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const comparisons = document.querySelectorAll('.image-comparison');
-    let artifactBox;
-
-    comparisons.forEach(comparison => {
-        const slider = comparison.querySelector('.slider-bar');
-        const overlay = comparison.querySelector('.image-overlay');
-        const container = comparison.querySelector('.comparison-images');
-
-        let isDragging = false;
-        let isPressing = false;
-
-        function updateSlider(e) {
-            if (!isDragging) return;
-
-            const rect = container.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            if (e.type.includes('touch')) x = e.touches[0].clientX - rect.left;
-
-            x = Math.max(0, Math.min(x, rect.width));
-            const percentage = (x / rect.width) * 100;
-
-            overlay.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-            slider.style.left = percentage + '%';
-        }
-
-        // Slider drag
-        slider.addEventListener('mousedown', () => isDragging = true);
-        document.addEventListener('mouseup', () => { isDragging = false; isPressing = false; hideArtifact(); });
-        document.addEventListener('mousemove', updateSlider);
-
-        slider.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
-        document.addEventListener('touchend', () => { isDragging = false; isPressing = false; hideArtifact(); });
-        document.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e); });
-
-        // Artifact magnifier
-        container.addEventListener('mousedown', (e) => {
-            isPressing = true;
-            showArtifact(e, container);
+    document.addEventListener('DOMContentLoaded', function() {
+        const comparisons = document.querySelectorAll('.image-comparison');
+        const artifactMagnifier = document.getElementById('artifactMagnifier');
+        
+        comparisons.forEach(comparison => {
+            const slider = comparison.querySelector('.slider-bar');
+            const overlay = comparison.querySelector('.image-overlay');
+            const container = comparison.querySelector('.comparison-images');
+            
+            let isDragging = false;
+            let isPressing = false;
+            let currentSliderPosition = 50; // 현재 슬라이더 위치 (%)
+            
+            // 슬라이더 업데이트 함수
+            function updateSlider(e) {
+                if (!isDragging) return;
+                
+                const rect = container.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                
+                if (e.type.includes('touch')) {
+                    x = e.touches[0].clientX - rect.left;
+                }
+                
+                x = Math.max(0, Math.min(x, rect.width));
+                currentSliderPosition = (x / rect.width) * 100;
+                
+                overlay.style.clipPath = `inset(0 ${100 - currentSliderPosition}% 0 0)`;
+                slider.style.left = currentSliderPosition + '%';
+            }
+            
+            // Artifact 이미지 보여주기
+            function showArtifactMagnifier(e) {
+                if (!isPressing) return;
+                
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // 경계 체크
+                if (x < 0 || x > rect.width || y < 0 || y > rect.height) {
+                    hideArtifactMagnifier();
+                    return;
+                }
+                
+                // 커서가 슬라이더의 왼쪽인지 오른쪽인지 판별
+                const percentage = (x / rect.width) * 100;
+                const artifactLeft = comparison.getAttribute('data-artifact-left');
+                const artifactRight = comparison.getAttribute('data-artifact-right');
+                const imgSrc = percentage < currentSliderPosition ? artifactLeft : artifactRight;
+                
+                if (!imgSrc) {
+                    console.warn('Artifact image path not found');
+                    return;
+                }
+                
+                // 설정값 가져오기
+                const magSize = parseInt(comparison.getAttribute('data-mag-size') || '250');
+                const magZoom = parseFloat(comparison.getAttribute('data-mag-zoom') || '2.5');
+                
+                // Magnifier 스타일 설정
+                artifactMagnifier.style.width = magSize + 'px';
+                artifactMagnifier.style.height = magSize + 'px';
+                artifactMagnifier.style.left = (e.clientX + 20) + 'px';
+                artifactMagnifier.style.top = (e.clientY - magSize / 2) + 'px';
+                
+                // 배경 이미지 계산
+                const bgWidth = rect.width * magZoom;
+                const bgHeight = rect.height * magZoom;
+                const bgPosX = -(x * magZoom - magSize / 2);
+                const bgPosY = -(y * magZoom - magSize / 2);
+                
+                // 배경 이미지 설정
+                artifactMagnifier.style.backgroundImage = `url('${imgSrc}')`;
+                artifactMagnifier.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
+                artifactMagnifier.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+                artifactMagnifier.classList.add('active');
+            }
+            
+            // Artifact 이미지 숨기기
+            function hideArtifactMagnifier() {
+                artifactMagnifier.classList.remove('active');
+            }
+            
+            // 슬라이더 드래그 이벤트
+            slider.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                e.preventDefault();
+            });
+            
+            slider.addEventListener('touchstart', function(e) {
+                isDragging = true;
+                e.preventDefault();
+            });
+            
+            // 컨테이너에서 마우스 누르기/떼기
+            container.addEventListener('mousedown', function(e) {
+                if (e.target === slider || slider.contains(e.target)) {
+                    return; // 슬라이더를 클릭한 경우 artifact 표시하지 않음
+                }
+                isPressing = true;
+                showArtifactMagnifier(e);
+                e.preventDefault();
+            });
+            
+            container.addEventListener('touchstart', function(e) {
+                if (e.target === slider || slider.contains(e.target)) {
+                    return;
+                }
+                isPressing = true;
+                const touch = e.touches[0];
+                const rect = container.getBoundingClientRect();
+                const mockEvent = {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                };
+                showArtifactMagnifier(mockEvent);
+                e.preventDefault();
+            });
+            
+            // 마우스 이동 시
+            container.addEventListener('mousemove', function(e) {
+                updateSlider(e);
+                if (isPressing) {
+                    showArtifactMagnifier(e);
+                }
+            });
+            
+            container.addEventListener('touchmove', function(e) {
+                updateSlider(e);
+                if (isPressing && e.touches[0]) {
+                    const touch = e.touches[0];
+                    const mockEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    showArtifactMagnifier(mockEvent);
+                }
+            });
+            
+            // 전역 이벤트 (마우스 떼기)
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                isPressing = false;
+                hideArtifactMagnifier();
+            });
+            
+            document.addEventListener('touchend', function() {
+                isDragging = false;
+                isPressing = false;
+                hideArtifactMagnifier();
+            });
+            
+            // 마우스가 컨테이너 밖으로 나가면 magnifier 숨기기
+            container.addEventListener('mouseleave', function() {
+                if (isPressing) {
+                    hideArtifactMagnifier();
+                }
+            });
+            
+            // 초기 슬라이더 위치 설정
+            overlay.style.clipPath = 'inset(0 50% 0 0)';
+            slider.style.left = '50%';
         });
-        document.addEventListener('mouseup', () => { isPressing = false; hideArtifact(); });
-        container.addEventListener('mousemove', (e) => { if (isPressing) showArtifact(e, container); });
-
-        // 초기값 50%
-        overlay.style.clipPath = "inset(0 50% 0 0)";
-        slider.style.left = "50%";
     });
-
-    function showArtifact(e, container) {
-        if (!artifactBox) {
-            artifactBox = document.createElement('div');
-            artifactBox.className = 'artifact-magnifier';
-            document.body.appendChild(artifactBox);
-        }
-
-        const rect = container.getBoundingClientRect();
-        const magSize = parseInt(container.dataset.magSize || 200, 10);
-        const magZoom = parseFloat(container.dataset.magZoom || 2.0);
-
-        artifactBox.style.width = magSize + 'px';
-        artifactBox.style.height = magSize + 'px';
-        artifactBox.style.left = (e.clientX + 20) + 'px';
-        artifactBox.style.top = (e.clientY - magSize / 2) + 'px';
-
-        const relativeX = e.clientX - rect.left;
-        const relativeY = e.clientY - rect.top;
-        const percentage = (relativeX / rect.width) * 100;
-
-        const imgSrc = percentage < 50 ? container.dataset.artifactLeft : container.dataset.artifactRight;
-
-        const bgWidth = rect.width * magZoom;
-        const bgHeight = rect.height * magZoom;
-        const bgPosX = -Math.min(relativeX * magZoom - magSize / 2, bgWidth - magSize);
-        const bgPosY = -Math.min(relativeY * magZoom - magSize / 2, bgHeight - magSize);
-
-        artifactBox.style.backgroundImage = `url('${imgSrc}')`;
-        artifactBox.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
-        artifactBox.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-        artifactBox.style.display = 'block';
-    }
-
-    function hideArtifact() {
-        if (artifactBox) artifactBox.style.display = 'none';
-    }
-});
-
-
-
-
-</script>
+    </script>
 </body>
 </html>
