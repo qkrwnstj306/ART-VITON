@@ -338,6 +338,17 @@
     display: block;
 }
 
+.artifact-magnifier {
+    position: fixed;
+    border: 2px solid #333;
+    border-radius: 50%;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    z-index: 9999;
+    pointer-events: none;
+    display: none;
+}
+
         .slider-button {
             position: absolute;
             top: 50%;
@@ -602,7 +613,11 @@
                 </div>
 
                 <!-- 두 번째 비교 -->
-                <div class="image-comparison">
+                <div class="image-comparison"
+                    data-artifact-left="./stableviton_results/unpair/artifact_maps/1.jpg"
+                    data-artifact-right="./results/unpair/artifact_maps/1.jpg"
+                    data-mag-size="200"
+                    data-mag-zoom="1.0">
                     <div class="comparison-images">
                         <img src="./results/unpair/1.jpg" alt="Ours" class="image-base">
                         <div class="image-overlay">
@@ -648,122 +663,90 @@
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const comparisons = document.querySelectorAll('.image-comparison');
+    let artifactBox;
 
     comparisons.forEach(comparison => {
         const slider = comparison.querySelector('.slider-bar');
         const overlay = comparison.querySelector('.image-overlay');
         const container = comparison.querySelector('.comparison-images');
-        
+
         let isDragging = false;
-        let isPressing = false; // 클릭 눌림 상태 (artifact 표시용)
+        let isPressing = false;
 
         function updateSlider(e) {
-            if (!isDragging) return; // bar 드래그 중일 때만 이동
+            if (!isDragging) return;
 
             const rect = container.getBoundingClientRect();
             let x = e.clientX - rect.left;
-
-            if (e.type.includes('touch')) {
-                x = e.touches[0].clientX - rect.left;
-            }
+            if (e.type.includes('touch')) x = e.touches[0].clientX - rect.left;
 
             x = Math.max(0, Math.min(x, rect.width));
             const percentage = (x / rect.width) * 100;
 
-            // 오버레이 보이는 부분 조절
             overlay.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
             slider.style.left = percentage + '%';
         }
 
-        // --- Slider Bar Drag ---
-        slider.addEventListener('mousedown', () => {
-            isDragging = true;
-        });
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            isPressing = false; // artifact 표시 해제
-        });
+        // Slider drag
+        slider.addEventListener('mousedown', () => isDragging = true);
+        document.addEventListener('mouseup', () => { isDragging = false; isPressing = false; hideArtifact(); });
         document.addEventListener('mousemove', updateSlider);
 
-        // 터치 이벤트
-        slider.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            e.preventDefault();
-        });
-        document.addEventListener('touchend', () => {
-            isDragging = false;
-            isPressing = false; // artifact 표시 해제
-        });
-        document.addEventListener('touchmove', (e) => {
-            if (isDragging) updateSlider(e);
-        });
+        slider.addEventListener('touchstart', (e) => { isDragging = true; e.preventDefault(); });
+        document.addEventListener('touchend', () => { isDragging = false; isPressing = false; hideArtifact(); });
+        document.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e); });
 
-        // --- Artifact Image 표시 제어 ---
+        // Artifact magnifier
         container.addEventListener('mousedown', (e) => {
             isPressing = true;
             showArtifact(e, container);
         });
-        document.addEventListener('mouseup', () => {
-            isPressing = false;
-            hideArtifact();
-        });
-        container.addEventListener('mousemove', (e) => {
-            if (isPressing) {
-                showArtifact(e, container);
-            }
-        });
+        document.addEventListener('mouseup', () => { isPressing = false; hideArtifact(); });
+        container.addEventListener('mousemove', (e) => { if (isPressing) showArtifact(e, container); });
 
-        // 초기값 (50%)
+        // 초기값 50%
         overlay.style.clipPath = "inset(0 50% 0 0)";
         slider.style.left = "50%";
     });
 
-    // --- Artifact Helper ---
-    let artifactBox;
     function showArtifact(e, container) {
-    if (!artifactBox) {
-        artifactBox = document.createElement('div');
-        artifactBox.style.position = 'fixed';
-        artifactBox.style.border = '2px solid #333';
-        artifactBox.style.background = '#fff';
-        artifactBox.style.zIndex = '9999';
-        artifactBox.style.pointerEvents = 'none';
-        document.body.appendChild(artifactBox);
+        if (!artifactBox) {
+            artifactBox = document.createElement('div');
+            artifactBox.className = 'artifact-magnifier';
+            document.body.appendChild(artifactBox);
+        }
+
+        const rect = container.getBoundingClientRect();
+        const magSize = parseInt(container.dataset.magSize || 200, 10);
+        const magZoom = parseFloat(container.dataset.magZoom || 2.0);
+
+        artifactBox.style.width = magSize + 'px';
+        artifactBox.style.height = magSize + 'px';
+        artifactBox.style.left = (e.clientX + 20) + 'px';
+        artifactBox.style.top = (e.clientY - magSize / 2) + 'px';
+
+        const relativeX = e.clientX - rect.left;
+        const relativeY = e.clientY - rect.top;
+        const percentage = (relativeX / rect.width) * 100;
+
+        const imgSrc = percentage < 50 ? container.dataset.artifactLeft : container.dataset.artifactRight;
+
+        const bgWidth = rect.width * magZoom;
+        const bgHeight = rect.height * magZoom;
+        const bgPosX = -Math.min(relativeX * magZoom - magSize / 2, bgWidth - magSize);
+        const bgPosY = -Math.min(relativeY * magZoom - magSize / 2, bgHeight - magSize);
+
+        artifactBox.style.backgroundImage = `url('${imgSrc}')`;
+        artifactBox.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
+        artifactBox.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+        artifactBox.style.display = 'block';
     }
-
-    // dataset 값 읽기
-    const artifactLeft = container.dataset.artifactLeft;
-    const artifactRight = container.dataset.artifactRight;
-    const magSize = parseInt(container.dataset.magSize || 200, 10);
-    const magZoom = parseFloat(container.dataset.magZoom || 1.0);
-
-    artifactBox.style.width = magSize + 'px';
-    artifactBox.style.height = magSize + 'px';
-    artifactBox.style.left = (e.clientX + 20) + 'px';
-    artifactBox.style.top = (e.clientY - magSize / 2) + 'px';
-
-    const rect = container.getBoundingClientRect();
-    const relativeX = e.clientX - rect.left;
-    const relativeY = e.clientY - rect.top;
-
-    // 바 기준으로 왼쪽/오른쪽 구분
-    const percentage = (relativeX / rect.width) * 100;
-    const imgSrc = percentage < 50 ? artifactLeft : artifactRight;
-
-    // background-size 계산 (줌 배율 반영)
-    const bgWidth = rect.width * magZoom;
-    const bgHeight = rect.height * magZoom;
-
-    artifactBox.style.backgroundImage = `url(${imgSrc})`;
-    artifactBox.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
-    artifactBox.style.backgroundPosition = `-${relativeX * magZoom - magSize / 2}px -${relativeY * magZoom - magSize / 2}px`;
-    artifactBox.style.display = 'block';
-}
 
     function hideArtifact() {
         if (artifactBox) artifactBox.style.display = 'none';
     }
 });
+
 
 
 
