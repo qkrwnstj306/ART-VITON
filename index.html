@@ -243,62 +243,62 @@
             color: #667eea;
         }
 
-        .comparison-slider-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        
+.comparison-slider-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-        .image-comparison {
-            position: relative;
-            margin-bottom: 60px;
-            user-select: none;
-        }
+.image-comparison {
+    position: relative;
+    margin-bottom: 60px;
+    user-select: none;
+}
 
-        .comparison-images {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
+.comparison-images {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
 
-        .image-base {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
+.image-base {
+    display: block;
+    width: 100%;
+    height: auto;
+}
 
-        .image-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            height: 100%;
-            overflow: hidden;
-            border-right: 3px solid white;
-        }
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    border-right: 3px solid white;
+}
 
-        .image-overlay img {
-            display: block;
-            width: 200%;
-            height: 100%;
-            max-width: none;
-            object-fit: cover;
-        }
+.image-overlay img {
+    display: block;
+    width: 200%;
+    height: auto;  /* ← 이 부분 수정 */
+    max-width: none;
+    /* object-fit 제거 */
+}
 
-        .slider-bar {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 4px;
-            height: 100%;
-            background: white;
-            cursor: ew-resize;
-            transform: translateX(-50%);
-            z-index: 10;
-        }
-
+.slider-bar {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: white;
+    cursor: ew-resize;
+    transform: translateX(-50%);
+    z-index: 10;
+}
         .slider-button {
             position: absolute;
             top: 50%;
