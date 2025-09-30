@@ -257,6 +257,18 @@
     max-width: 600px; /* 필요시 조정 */
 }
 
+.image-labels * {
+    -webkit-user-drag: none;  /* Safari, Chrome 이미지 드래그 방지 */
+    user-drag: none;
+
+    -webkit-user-select: none; /* Safari/Chrome 선택 방지 */
+    -moz-user-select: none;    /* Firefox 선택 방지 */
+    -ms-user-select: none;     /* IE 선택 방지 */
+    user-select: none;         /* 표준 선택 방지 */
+
+    -webkit-tap-highlight-color: transparent; /* 모바일 탭 하이라이트 제거 */
+}
+
 .image-comparison img {
     user-drag: none;        /* Safari */
     -webkit-user-drag: none;/* Safari, Chrome */
@@ -543,9 +555,9 @@
                 <!-- 첫 번째 비교 -->
                 <div class="image-comparison">
                     <div class="comparison-images">
-                        <img src="./results/pair/1.jpg" alt="Ours">
+                        <img src="./results/pair/1.jpg" alt="Ours" class="image-base">
                         <div class="image-overlay">
-                            <img src="./stableviton_results/pair/1.jpg" alt="StableVITON" class="image-base">
+                            <img src="./stableviton_results/pair/1.jpg" alt="StableVITON">
                         </div>
                     </div>
                     <div class="slider-bar">
@@ -609,9 +621,6 @@
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const comparisons = document.querySelectorAll('.image-comparison');
-// dragstart 이벤트를 차단해서 브라우저의 기본 이미지 드래그(파란색 레이어) 방지
-document.querySelectorAll('.image-comparison img, .image-labels, .image-labels *')
-    .forEach(el => el.addEventListener('dragstart', e => e.preventDefault()));
 
     comparisons.forEach(comparison => {
         const slider = comparison.querySelector('.slider-bar');
