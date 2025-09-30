@@ -217,23 +217,26 @@
         }
         
         .comparison-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: 1fr; /* 한 열만 사용 */
+        gap: 20px;
+        margin-bottom: 30px;
+        justify-items: center; /* 중앙 정렬 */
         }
-        
+
         .comparison-item {
             text-align: center;
+            max-width: 800px; /* 이미지 최대 너비 제한 */
+            width: 100%;
         }
-        
+
         .comparison-item img {
             width: 100%;
             border-radius: 6px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.08);
             border: 1px solid #f0f0f0;
         }
-        
+
         .comparison-label {
             margin-top: 10px;
             font-weight: 600;
@@ -427,29 +430,17 @@
                 
                 <div class="comparison-row">
                     <div class="comparison-item">
-                        <img src="./assets/result1.jpg" alt="Result 1">
+                        <img src="./assets/results1.jpg" alt="Result 1">
                         <div class="comparison-label">VITON-HD/VITON-HD</div>
                     </div>
                     <div class="comparison-item">
-                        <img src="./assets/result2.jpg" alt="Result 2">
+                        <img src="./assets/results2.jpg" alt="Result 2">
                         <div class="comparison-label">VITON-HD/SHHQ-1.0</div>
                     </div>
                     <div class="comparison-item">
                         <img src="./assets/results3.jpg" alt="Result 3">
                         <div class="comparison-label">DressCode/DressCode</div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="results-grid">
-                <div class="result-item">
-                    <img src="./assets/results1.jpg" alt="Result 1">
-                </div>
-                <div class="result-item">
-                    <img src="./assets/results2.jpg" alt="Result 2">
-                </div>
-                <div class="result-item">
-                    <img src="./assets/results3.jpg" alt="Result 3">
                 </div>
             </div>
         </section>
