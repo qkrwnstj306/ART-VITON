@@ -605,56 +605,60 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const comparisons = document.querySelectorAll('.image-comparison');
+document.addEventListener('DOMContentLoaded', function() {
+    const comparisons = document.querySelectorAll('.image-comparison');
+    
+    comparisons.forEach(comparison => {
+        const slider = comparison.querySelector('.slider-bar');
+        const overlay = comparison.querySelector('.image-overlay');
+        const container = comparison.querySelector('.comparison-images');
         
-        comparisons.forEach(comparison => {
-            const slider = comparison.querySelector('.slider-bar');
-            const overlay = comparison.querySelector('.image-overlay');
-            const container = comparison.querySelector('.comparison-images');
+        let isDragging = false;
+        
+        function updateSlider(e) {
+            if (!isDragging && e.type !== 'click') return;
             
-            let isDragging = false;
+            const rect = container.getBoundingClientRect();
+            let x = e.clientX - rect.left;
             
-            function updateSlider(e) {
-                if (!isDragging && e.type !== 'click') return;
-                
-                const rect = container.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                
-                // 터치 이벤트 처리
-                if (e.type.includes('touch')) {
-                    x = e.touches[0].clientX - rect.left;
-                }
-                
-                // 슬라이더 범위 제한
-                x = Math.max(0, Math.min(x, rect.width));
-                
-                const percentage = (x / rect.width) * 100;
-                
-                // 왼쪽 영역(StableVITON) 너비 조정
-                overlay.style.width = percentage + '%';
-                slider.style.left = percentage + '%';
+            // 터치 이벤트 처리
+            if (e.type.includes('touch')) {
+                x = e.touches[0].clientX - rect.left;
             }
             
-            // 마우스 이벤트
-            slider.addEventListener('mousedown', () => isDragging = true);
-            document.addEventListener('mouseup', () => isDragging = false);
-            document.addEventListener('mousemove', updateSlider);
-            container.addEventListener('click', updateSlider);
+            // 범위 제한
+            x = Math.max(0, Math.min(x, rect.width));
             
-            // 터치 이벤트 (모바일)
-            slider.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                e.preventDefault();
-            });
-            document.addEventListener('touchend', () => isDragging = false);
-            document.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    updateSlider(e);
-                }
-            });
+            const percentage = (x / rect.width) * 100;
+            
+            // StableVITON이 덮는 overlay 너비 조정
+            overlay.style.width = percentage + '%';
+            slider.style.left = percentage + '%';
+        }
+        
+        // 마우스 이벤트
+        slider.addEventListener('mousedown', () => isDragging = true);
+        document.addEventListener('mouseup', () => isDragging = false);
+        document.addEventListener('mousemove', updateSlider);
+        container.addEventListener('click', updateSlider);
+        
+        // 터치 이벤트 (모바일)
+        slider.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            e.preventDefault();
         });
+        document.addEventListener('touchend', () => isDragging = false);
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                updateSlider(e);
+            }
+        });
+        
+        // 초기값 (50%)
+        overlay.style.width = "50%";
+        slider.style.left = "50%";
     });
-    </script>
+});
+</script>
 </body>
 </html>
