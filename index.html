@@ -653,163 +653,107 @@ document.addEventListener('DOMContentLoaded', function() {
         const slider = comparison.querySelector('.slider-bar');
         const overlay = comparison.querySelector('.image-overlay');
         const container = comparison.querySelector('.comparison-images');
-
+        
         let isDragging = false;
+        let isPressing = false; // 클릭 눌림 상태 (artifact 표시용)
 
-        // 기존 슬라이더 업데이트 함수
         function updateSlider(e) {
-            if (!isDragging && e.type !== 'click') return;
+            if (!isDragging) return; // bar 드래그 중일 때만 이동
 
             const rect = container.getBoundingClientRect();
             let x = e.clientX - rect.left;
 
-            if (e.type.includes && e.type.includes('touch')) {
+            if (e.type.includes('touch')) {
                 x = e.touches[0].clientX - rect.left;
             }
 
             x = Math.max(0, Math.min(x, rect.width));
             const percentage = (x / rect.width) * 100;
 
+            // 오버레이 보이는 부분 조절
             overlay.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
             slider.style.left = percentage + '%';
         }
 
-        // 슬라이더 이벤트
-        slider.addEventListener('mousedown', () => isDragging = true);
-        document.addEventListener('mouseup', () => isDragging = false);
+        // --- Slider Bar Drag ---
+        slider.addEventListener('mousedown', () => {
+            isDragging = true;
+        });
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            isPressing = false; // artifact 표시 해제
+        });
         document.addEventListener('mousemove', updateSlider);
-        container.addEventListener('click', updateSlider);
 
+        // 터치 이벤트
         slider.addEventListener('touchstart', (e) => {
             isDragging = true;
             e.preventDefault();
         });
-        document.addEventListener('touchend', () => isDragging = false);
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+            isPressing = false; // artifact 표시 해제
+        });
         document.addEventListener('touchmove', (e) => {
             if (isDragging) updateSlider(e);
+        });
+
+        // --- Artifact Image 표시 제어 ---
+        container.addEventListener('mousedown', (e) => {
+            isPressing = true;
+            showArtifact(e, container);
+        });
+        document.addEventListener('mouseup', () => {
+            isPressing = false;
+            hideArtifact();
+        });
+        container.addEventListener('mousemove', (e) => {
+            if (isPressing) {
+                showArtifact(e, container);
+            }
         });
 
         // 초기값 (50%)
         overlay.style.clipPath = "inset(0 50% 0 0)";
         slider.style.left = "50%";
-
-        /* ----------------- Magnifier (돋보기) 기능 ----------------- */
-
-        // 데이터 속성에서 경로/옵션 읽기
-        const artifactLeft = comparison.dataset.artifactLeft || null;
-        const artifactRight = comparison.dataset.artifactRight || null;
-        const defaultMagSize = parseInt(comparison.dataset.magSize) || 200;
-        const defaultMagZoom = parseFloat(comparison.dataset.magZoom) || 2.5;
-
-        // 돋보기 엘리먼트 생성
-        const magnifier = document.createElement('div');
-        magnifier.className = 'magnifier';
-        magnifier.style.width = defaultMagSize + 'px';
-        magnifier.style.height = defaultMagSize + 'px';
-        comparison.appendChild(magnifier); // comparison이 position: relative여야 함
-
-        // 미리 로드 (선택사항) — 브라우저 캐싱으로 부드럽게
-        if (artifactLeft) { const img = new Image(); img.src = artifactLeft; }
-        if (artifactRight) { const img = new Image(); img.src = artifactRight; }
-
-        let currentArtifact = null;
-
-        function showMagnifier() {
-            magnifier.classList.add('show');
-            magnifier.style.display = 'block';
-        }
-        function hideMagnifier() {
-            magnifier.classList.remove('show');
-            magnifier.style.display = 'none';
-        }
-
-        function onMoveMagnifier(e) {
-            const rect = container.getBoundingClientRect();
-            let clientX = e.clientX, clientY = e.clientY;
-
-            // 터치 이벤트일 경우
-            if (e.touches && e.touches[0]) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            }
-
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
-
-            if (x < 0 || x > rect.width || y < 0 || y > rect.height) {
-                hideMagnifier();
-                return;
-            }
-
-            // 슬라이더의 화면 X 위치 구하기 (슬라이더 중앙)
-            const sliderRect = slider.getBoundingClientRect();
-            const sliderCenterX = sliderRect.left + sliderRect.width / 2;
-
-            // 커서가 슬라이더 오른쪽이면 right artifact(ours), 왼쪽이면 left (stable)
-            const chooseRight = (clientX > sliderCenterX);
-
-            const artifactSrc = chooseRight ? artifactRight : artifactLeft;
-
-            if (!artifactSrc) {
-                hideMagnifier();
-                return;
-            }
-
-            // 필요 시 이미지 소스 변경
-            if (currentArtifact !== artifactSrc) {
-                currentArtifact = artifactSrc;
-                magnifier.style.backgroundImage = `url("${artifactSrc}")`;
-            }
-
-            // 돋보기 크기 및 배율
-            const magSize = parseInt(comparison.dataset.magSize) || defaultMagSize;
-            const zoom = parseFloat(comparison.dataset.magZoom) || defaultMagZoom;
-
-            magnifier.style.width = magSize + 'px';
-            magnifier.style.height = magSize + 'px';
-
-            // 배경 이미지의 사이즈를 "보이는 컨테이너 크기 * zoom" 으로 설정
-            const bgW = rect.width * zoom;
-            const bgH = rect.height * zoom;
-            magnifier.style.backgroundSize = `${bgW}px ${bgH}px`;
-
-            // 배경 위치: 커서 위치를 중심으로 맞추기
-            const bgPosX = -(x * zoom - magSize / 2);
-            const bgPosY = -(y * zoom - magSize / 2);
-            magnifier.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-
-            // 돋보기 박스(visual) 위치: 기본적으로 커서 오른쪽으로 띄움, 부족하면 왼쪽으로
-            const gap = 14; // 커서와 돋보기 사이 간격
-            let left = x + gap;
-            // 화면 공간(비교 컨테이너 내부) 기준으로 판단
-            if (left + magSize > rect.width) {
-                left = x - gap - magSize; // 왼쪽에 띄움
-            }
-            let top = y - magSize / 2;
-            if (top < 0) top = 0;
-            if (top + magSize > rect.height) top = rect.height - magSize;
-
-            magnifier.style.left = left + 'px';
-            magnifier.style.top = top + 'px';
-
-            showMagnifier();
-        }
-
-        // 이벤트 연결
-        container.addEventListener('mouseenter', (e) => {
-            // 돋보기를 보여줄지 판단 (artifact 이미지가 있어야)
-            if (artifactLeft || artifactRight) showMagnifier();
-        });
-        container.addEventListener('mouseleave', hideMagnifier);
-        container.addEventListener('mousemove', onMoveMagnifier);
-        container.addEventListener('touchstart', (e) => {
-            if (artifactLeft || artifactRight) onMoveMagnifier(e);
-        }, {passive: true});
-        container.addEventListener('touchmove', (e) => {
-            onMoveMagnifier(e);
-        }, {passive: true});
     });
+
+    // --- Artifact Helper ---
+    let artifactBox;
+    function showArtifact(e, container) {
+        if (!artifactBox) {
+            artifactBox = document.createElement('div');
+            artifactBox.style.position = 'fixed';
+            artifactBox.style.border = '2px solid #333';
+            artifactBox.style.background = '#fff';
+            artifactBox.style.zIndex = '9999';
+            artifactBox.style.pointerEvents = 'none';
+            document.body.appendChild(artifactBox);
+        }
+
+        const size = 120; // 확대 박스 크기
+        artifactBox.style.width = size + 'px';
+        artifactBox.style.height = size + 'px';
+        artifactBox.style.left = (e.clientX + 20) + 'px';
+        artifactBox.style.top = (e.clientY - size / 2) + 'px';
+
+        // 현재 마우스 위치 기준 artifact 이미지 crop & 확대
+        const rect = container.getBoundingClientRect();
+        const relativeX = e.clientX - rect.left;
+        const relativeY = e.clientY - rect.top;
+        const img = container.querySelector('.image-base'); // ours 기준 (왼쪽/오른쪽 나눠서 확장 가능)
+
+        artifactBox.style.backgroundImage = `url(${img.src})`;
+        artifactBox.style.backgroundSize = `${rect.width * 2}px ${rect.height * 2}px`;
+        artifactBox.style.backgroundPosition = `-${relativeX}px -${relativeY}px`;
+        artifactBox.style.display = 'block';
+    }
+
+    function hideArtifact() {
+        if (artifactBox) artifactBox.style.display = 'none';
+    }
 });
+
 
 
 </script>
