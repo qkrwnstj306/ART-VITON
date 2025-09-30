@@ -274,8 +274,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 50%;   /* 처음에는 절반만 노출 */
-    height: 100%;
+    width: 100%;   /* 항상 전체 */
+    height: 100%;  /* 항상 전체 */
     overflow: hidden;
 }
 
@@ -615,26 +615,25 @@ document.addEventListener('DOMContentLoaded', function() {
         let isDragging = false;
         
         function updateSlider(e) {
-            if (!isDragging && e.type !== 'click') return;
-            
-            const rect = container.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            
-            // 터치 이벤트 처리
-            if (e.type.includes('touch')) {
-                x = e.touches[0].clientX - rect.left;
-            }
-            
-            // 범위 제한
-            x = Math.max(0, Math.min(x, rect.width));
-            
-            const percentage = (x / rect.width) * 100;
+    if (!isDragging && e.type !== 'click') return;
+    
+    const rect = container.getBoundingClientRect();
+    let x = e.clientX - rect.left;
 
-            // 오버레이(StableVITON)을 오른쪽 부분만 보이게 반전
-            overlay.style.width = (100 - percentage) + '%';
-            overlay.style.left = percentage + '%';
-            slider.style.left = percentage + '%';
-        }
+    // 터치 이벤트 처리
+    if (e.type.includes('touch')) {
+        x = e.touches[0].clientX - rect.left;
+    }
+
+    // 슬라이더 범위 제한
+    x = Math.max(0, Math.min(x, rect.width));
+
+    const percentage = (x / rect.width) * 100;
+
+    // overlay 이미지 크기는 그대로 두고, 보여줄 부분만 잘라냄
+    overlay.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+    slider.style.left = percentage + '%';
+}
         
         // 마우스 이벤트
         slider.addEventListener('mousedown', () => isDragging = true);
