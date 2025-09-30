@@ -543,10 +543,9 @@
                 <!-- 첫 번째 비교 -->
                 <div class="image-comparison">
                     <div class="comparison-images">
-                        <!-- StableVITON을 base로 -->
-                        <img src="./stableviton_results/pair/1.jpg" alt="StableVITON" class="image-base">
+                        <img src="./results/pair/1.jpg" alt="Ours">
                         <div class="image-overlay">
-                            <img src="./results/pair/1.jpg" alt="Ours">
+                            <img src="./stableviton_results/pair/1.jpg" alt="StableVITON" class="image-base">
                         </div>
                     </div>
                     <div class="slider-bar">
@@ -610,7 +609,10 @@
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const comparisons = document.querySelectorAll('.image-comparison');
-    
+// dragstart 이벤트를 차단해서 브라우저의 기본 이미지 드래그(파란색 레이어) 방지
+document.querySelectorAll('.image-comparison img, .image-labels, .image-labels *')
+    .forEach(el => el.addEventListener('dragstart', e => e.preventDefault()));
+
     comparisons.forEach(comparison => {
         const slider = comparison.querySelector('.slider-bar');
         const overlay = comparison.querySelector('.image-overlay');
