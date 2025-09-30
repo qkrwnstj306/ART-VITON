@@ -242,20 +242,26 @@
             font-weight: 600;
             color: #667eea;
         }
-        
-        .video-container {
-            max-width: 900px;
-            margin: 40px auto;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            background: white;
+        .comparison-slider-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
         }
-        
-        .video-container iframe {
+
+        .image-comparison {
+            position: relative;
+            margin-bottom: 60px;
+            user-select: none;
+        }
+
+        .comparison-images {
+            position: relative;
             width: 100%;
-            height: 500px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
+
         
         .citation-box {
             background: rgba(255, 255, 255, 0.9);
@@ -445,18 +451,78 @@
             </div>
         </section>
         
-        <!-- Video -->
-        <section class="image-section" style="background: linear-gradient(to bottom, white, #fafafa);">
-            <h2>StableVITON VS StableVITON (Ours)</h2>
-            <div class="video-container">
-                <!-- YouTube 또는 비디오 임베드 -->
-                <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                </iframe>
+        <!-- Image Comparison -->
+<section class="image-section" style="background: linear-gradient(to bottom, white, #fafafa);">
+    <h2>StableVITON VS StableVITON (Ours)</h2>
+    
+    <div class="comparison-slider-container">
+        <!-- 첫 번째 비교 -->
+        <div class="image-comparison">
+            <div class="comparison-images">
+                <img src="./assets/stableviton1.jpg" alt="StableVITON" class="image-base">
+                <div class="image-overlay">
+                    <img src="./assets/ours1.jpg" alt="Ours">
+                </div>
             </div>
-        </section>
+            <div class="slider-bar">
+                <div class="slider-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="image-labels">
+                <span class="label-left">StableVITON</span>
+                <span class="label-right">Ours</span>
+            </div>
+        </div>
+
+        <!-- 두 번째 비교 (필요하면 추가) -->
+        <div class="image-comparison">
+            <div class="comparison-images">
+                <img src="./assets/stableviton2.jpg" alt="StableVITON" class="image-base">
+                <div class="image-overlay">
+                    <img src="./assets/ours2.jpg" alt="Ours">
+                </div>
+            </div>
+            <div class="slider-bar">
+                <div class="slider-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="image-labels">
+                <span class="label-left">StableVITON</span>
+                <span class="label-right">Ours</span>
+            </div>
+        </div>
+
+        <!-- 세 번째 비교 (필요하면 추가) -->
+        <div class="image-comparison">
+            <div class="comparison-images">
+                <img src="./assets/stableviton3.jpg" alt="StableVITON" class="image-base">
+                <div class="image-overlay">
+                    <img src="./assets/ours3.jpg" alt="Ours">
+                </div>
+            </div>
+            <div class="slider-bar">
+                <div class="slider-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="image-labels">
+                <span class="label-left">StableVITON</span>
+                <span class="label-right">Ours</span>
+            </div>
+        </div>
+    </div>
+</section>
         
         <!-- Citation -->
         <section class="citation-section">
