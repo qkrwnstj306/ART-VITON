@@ -539,11 +539,10 @@
                 <!-- 첫 번째 비교 -->
                 <div class="image-comparison">
                     <div class="comparison-images">
-                        <!-- 오른쪽(Ours)가 베이스 -->
-                        <img src="./results/pair/1.jpg" alt="Ours" class="image-base">
-                        <!-- 왼쪽(StableVITON)이 오버레이 -->
+                        <!-- StableVITON을 base로 -->
+                        <img src="./stableviton_results/pair/1.jpg" alt="StableVITON" class="image-base">
                         <div class="image-overlay">
-                            <img src="./stableviton_results/pair/1.jpg" alt="StableVITON">
+                            <img src="./results/pair/1.jpg" alt="Ours">
                         </div>
                     </div>
                     <div class="slider-bar">
@@ -630,9 +629,10 @@ document.addEventListener('DOMContentLoaded', function() {
             x = Math.max(0, Math.min(x, rect.width));
             
             const percentage = (x / rect.width) * 100;
-            
-            // StableVITON이 덮는 overlay 너비 조정
-            overlay.style.width = percentage + '%';
+
+            // 오버레이(StableVITON)을 오른쪽 부분만 보이게 반전
+            overlay.style.width = (100 - percentage) + '%';
+            overlay.style.left = percentage + '%';
             slider.style.left = percentage + '%';
         }
         
