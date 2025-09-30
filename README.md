@@ -1,6 +1,6 @@
 # ART-VITON: Measurement-Guided Latent Diffusion for Artifact-Free Virtual Try-On
 
-![Result 1](assets/1.jpg)
+![Result 1](assets/3.jpg)
 ![Result 2](assets/2.jpg)
 
 # SetUP
