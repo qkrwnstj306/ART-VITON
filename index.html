@@ -258,11 +258,12 @@
         }
 
         .input-image-item {
-            background: #fafafa;
+            background: white;
             border-radius: 8px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e5e5e5;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
 
         .input-image-item img {
@@ -313,12 +314,17 @@
             width: 100%;
             height: auto;
             cursor: crosshair;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e5e5;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
 
         .image-base {
             display: block;
             width: 100%;
             height: auto;
+            border-radius: 8px;
         }
 
         .image-overlay {
@@ -328,12 +334,14 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            border-radius: 8px;
         }
 
         .image-overlay img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 8px;
         }
 
         .slider-bar {
@@ -345,7 +353,8 @@
             background: white;
             cursor: ew-resize;
             transform: translateX(-50%);
-            z-index: 10;
+            z-index: 20;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2);
         }
 
         /* Artifact Magnifier */
@@ -588,7 +597,7 @@
         </section>
         
         <!-- Results -->
-        <section class="image-section" style="background: #fafafa;">
+        <section class="image-section">
             <h2>Results</h2>
             
             <div class="comparison-container">
@@ -616,7 +625,7 @@
         </section>
         
         <!-- Image Comparison -->
-        <section class="image-section" style="background: #fafafa;">
+        <section class="image-section" style="background: linear-gradient(to bottom, #fafafa, white);">
             <h2>StableVITON VS StableVITON (Ours)</h2>
             <p style="text-align: center; color: #888; margin-bottom: 30px;">
                 Click and hold on the images to see the artifact maps magnified
